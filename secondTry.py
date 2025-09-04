@@ -24,7 +24,7 @@ def get_electric_field(charges, x, y):
     Calculates the electric field vector at a point (x, y) due to a list of charges.
     """
     Ex, Ey = 0, 0
-    # Use a small epsilon to prevent division by zero at the charge's exact location
+    # Use a small epsilon to prevent division from zero at the charge's exact location
     epsilon = 1e-6
     for q, qx, qy in charges:
         dx = x - qx
@@ -117,29 +117,17 @@ st.sidebar.subheader("Current Charges")
 if not st.session_state.charges:
     st.sidebar.info("No charges added yet.")
 else:
-    # Use a DataFrame for a cleaner look
-    charges_df = pd.DataFrame(st.session_state.charges, columns=['q', 'x', 'y'])
-    charges_df['Remove'] = [f'rm_{i}' for i in range(len(st.session_state.charges))]
-    
-    edited_df = st.sidebar.data_editor(
-        charges_df,
-        column_config={
-            "Remove": st.column_config.CheckboxColumn(
-                "Remove?",
-                default=False,
-            )
-        },
-        hide_index=True,
-    )
-    
-    # Find which charges were marked for removal
-    charges_to_remove_indices = edited_df[edited_df['Remove']].index
-    
-    if len(charges_to_remove_indices) > 0:
-        # Filter out the charges marked for removal
-        st.session_state.charges = [
-            charge for i, charge in enumerate(st.session_state.charges)
-            if i not in charges_to_remove_indices
-        ]
+    charges_to_keep = []
+    for i, (q, qx, qy) in enumerate(st.session_state.charges):
+        col1, col2 = st.sidebar.columns([4, 1])
+        with col1:
+            st.write(f"q={q}, x={qx}, y={qy}")
+        with col2:
+            if st.button("❌", key=f"remove_{i}"):
+                # Skip adding this charge to the new list (removes it)
+                continue
+        charges_to_keep.append([q, qx, qy])
+    if len(charges_to_keep) != len(st.session_state.charges):
+        st.session_state.charges = charges_to_keep
         st.rerun()
 
