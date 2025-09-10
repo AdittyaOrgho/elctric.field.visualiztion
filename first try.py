@@ -108,3 +108,5 @@ if __name__ == '__main__':
     # charges = [(2, 3, 4), (-1, -5, 2), (1.5, 6, -3), (-2.5, -1, -5)]
 
     plot_electric_field(charges)
+
+    #matplotlib.use('qtagg')
